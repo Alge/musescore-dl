@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('url', help='Url to a musescore.com score page. Ex: https://musescore.com/user/918006/scores/1439901')
 parser.add_argument('--midi', action='store_true', help='Download PDF file')
 parser.add_argument('--pdf', action='store_true', help='Download midi file')
-parser.add_argument('--version', action='version',
+parser.add_argument('-v', '--version', action='version',
                     version='%(prog)s 1.0')
 parser.add_argument('-o', help='output file name without extension', default=None)
 
