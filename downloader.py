@@ -73,7 +73,8 @@ class Downloader:
     def generate_pdf(self, image_files):
         output = PdfFileWriter()
         tmpdir = tempfile.gettempdir()
-        for image in image_files:
+        for n, image in enumerate(image_files):
+            print(f"rendering page {n}")
             filename = image.split("/")[-1]
             filename = filename.replace(".svg", ".pdf")
 
@@ -83,7 +84,7 @@ class Downloader:
             reader = PdfFileReader(open(tmpdir+filename, 'rb'))
             output.addPage(reader.getPage(0))
 
-
+        print("Rendering output file")
         filename = f"{tmpdir}{self.score_id}.pdf"
         outputStream = open(filename, "wb")
         output.write(outputStream)
