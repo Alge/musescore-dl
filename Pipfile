@@ -7,6 +7,9 @@ name = "pypi"
 requests = "*"
 Pillow = "*"
 bs4 = "*"
+svglib = "*"
+reportlab = "*"
+PyPDF2 = "*"
 
 [dev-packages]
 pyinstaller = "*"
