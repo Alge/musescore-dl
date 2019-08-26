@@ -8,6 +8,8 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
+from PIL import Image
+
 class Downloader:
 
     def __init__(self, url):
@@ -53,14 +55,23 @@ class Downloader:
 
         image_base_url = soup.find('img', attrs={'id':'score_0'})['src']
 
+        if 'score_0.svg' in image_base_url:
+            self.image_type = 'svg'
+        if 'score_0.png' in image_base_url:
+            self.image_type = 'png'
+
         image_list = []
 
         for page in range(pages):
-            url = image_base_url.replace('score_0.svg', f"score_{page}.svg")
+            if 'score_0.svg' in image_base_url:
+                url = image_base_url.replace('score_0.svg', f"score_{page}.svg")
+            if 'score_0.png' in image_base_url:
+                url = image_base_url.replace('score_0.png', f"score_{page}.png")
+
             print(f"Downloading: {url}")
             r = requests.get(url, stream=True)
             if r.status_code == 200:
-                filename = f"{tempfile.gettempdir()}/{self.score_id}-{page}.svg"
+                filename = f"{tempfile.gettempdir()}/{self.score_id}-{page}.{self.image_type}"
                 with open(filename, 'wb') as f:
                     r.raw.decode_content = True
                     shutil.copyfileobj(r.raw, f)
@@ -69,8 +80,25 @@ class Downloader:
 
         return image_list
         # return list of images
+    def generate_pdf_png(self, image_files):
+        pil_images = []
+        for image in image_files:
+            i = Image.open(image)
+            i = self.remove_transparency(i)
+            i = i.convert("RGB")
+            pil_images.append(i)
 
-    def generate_pdf(self, image_files):
+        filename = f"{tempfile.gettempdir()}/{self.score_id}.pdf"
+        pil_images[0].save(
+                filename,
+                "PDF",
+                resolution=100.0,
+                save_all=True,
+                append_images=pil_images[1:]
+        )
+        return filename
+
+    def generate_pdf_svg(self, image_files):
         output = PdfFileWriter()
         tmpdir = tempfile.gettempdir()
         for n, image in enumerate(image_files):
@@ -89,12 +117,15 @@ class Downloader:
         outputStream = open(filename, "wb")
         output.write(outputStream)
 
-        return filename 
+        return filename
 
     def get_pdf(self):
         print("Starting PDF download")
         images = self.get_images()
-        return self.generate_pdf(images)
+        if self.image_type == 'png':
+            return self.generate_pdf_png(images)
+        if self.image_type == 'svg':
+            return self.generate_pdf_svg(images)
 
 
 if __name__ == '__main__':
