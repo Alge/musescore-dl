@@ -26,11 +26,11 @@ if args.o:
 if args.pdf:
     tmp_path = d.get_pdf()
     move(tmp_path, filename+".pdf")
-    print("Done downloading PDF file")
+    print(f"Done downloading PDF file: {filename}.pdf")
 
 if args.midi:
     tmp_path = d.get_midi()
     move(tmp_path, filename+".mid")
-    print("Done downloading midi file")
+    print(f"Done downloading midi file: {filename}.mid")
 
 print("done")

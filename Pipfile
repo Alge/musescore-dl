@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 requests = "*"
-Pillow = "*"
 bs4 = "*"
 svglib = "*"
 reportlab = "*"

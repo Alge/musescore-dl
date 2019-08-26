@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from PIL import Image
 import requests
 from bs4 import BeautifulSoup as bs
 import shutil
@@ -27,16 +26,17 @@ class Downloader:
 
     def get_midi(self):
 
+        print("Starting MIDI download")
+
         response = requests.get(self.url)
 
         soup = bs(response.text, 'html.parser')
         image_base_url = soup.find('img', attrs={'id':'score_0'})['src']
         midi_url = image_base_url.replace("score_0.svg", "score.mid")
-
+        print(f"Downloading {midi_url}")
         r = requests.get(midi_url, stream=True)
         if r.status_code == 200:
             filename = f"{tempfile.gettempdir()}/{self.score_id}.mid"
-            print(f"downloaded image to: {filename}")
             with open(filename, 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
@@ -92,6 +92,7 @@ class Downloader:
         return filename 
 
     def get_pdf(self):
+        print("Starting PDF download")
         images = self.get_images()
         return self.generate_pdf(images)
 
